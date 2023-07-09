@@ -1,0 +1,29 @@
+version: '3'
+
+services:
+  db:
+    container_name: tsx_mysql
+    image: mysql:latest
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DATABASE_PASSWORD}
+      MYSQL_DATABASE: ${DATABASE_DBNAME}
+    restart: always
+    volumes:
+      - mysqldb_data:/var/lib/mysql
+      - ./schema.sql:/docker-entrypoint-initdb.d/schema.sql
+  
+  web:
+      container_name: tsx_api
+      build: .
+      ports:
+        - 5000:5000
+      environment:
+      - DATABASE_HOST=db # to connect db from container
+      restart: always
+      depends_on:
+      - db
+
+volumes:
+  mysqldb_data:
